@@ -1,2 +1,4 @@
-infra/.terraform/
-infra/*.tfstate
+# Terraform state files and backups
+*.tfstate
+*.tfstate.backup
+.terraform/

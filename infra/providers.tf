@@ -7,6 +7,13 @@ terraform {
       version = "6.35.1"
     }
   }
+
+  backend "s3" {
+    bucket         = "lead-forge-terraform-state-bucket"
+    key            = "prod/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "lead_forge_terraform_locks_table"
+  }
 }
 
 provider "aws" {
