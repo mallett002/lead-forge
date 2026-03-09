@@ -62,6 +62,7 @@ resource "aws_s3_object" "index" {
   bucket = aws_s3_bucket.lead-forge-website-s3-bucket.id
   key    = "index.html"
   source = "../src/index.html"
+  content_type = "text/html"
 }
 
 # upload error.html file:
@@ -69,6 +70,7 @@ resource "aws_s3_object" "error" {
   bucket = aws_s3_bucket.lead-forge-website-s3-bucket.id
   key    = "error.html"
   source = "../src/error.html"
+  content_type = "text/html"
 }
 
 # print out the url
