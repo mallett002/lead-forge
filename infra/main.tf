@@ -63,6 +63,7 @@ resource "aws_s3_object" "index" {
   key    = "index.html"
   source = "../src/index.html"
   content_type = "text/html"
+  etag = filemd5("../src/index.html")
 }
 
 # upload error.html file:
@@ -71,6 +72,7 @@ resource "aws_s3_object" "error" {
   key    = "error.html"
   source = "../src/error.html"
   content_type = "text/html"
+  etag = filemd5("../src/error.html")
 }
 
 # print out the url
