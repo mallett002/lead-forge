@@ -16,10 +16,13 @@ terraform {
   }
 }
 
+# default provider (keep this default provider only if not us-east-1)
+# keeping for documentation only
 provider "aws" {
   region = "us-east-1"
 }
 
+# provider for resources that require us-east-1
 provider "aws" {
   alias  = "us_east_1"
   region = "us-east-1"
