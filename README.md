@@ -22,3 +22,6 @@
 
 - Visit `https://lead-forge-website-s3-bucket.s3.amazonaws.com/index.html`
 
+
+### Setup
+- created hosted zone in AWS under lead-forge acct
