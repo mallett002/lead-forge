@@ -1,13 +1,15 @@
-resource "aws_s3_bucket" "site" {
-  bucket = "farmtotablenearme-site"
+# s3 bucket for website
+resource "aws_s3_bucket" "site-bucket" {
+  bucket = "farmtotablenearme-cloudfront-distro"
 
   tags = {
     Name = "lead-forge"
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "site" {
-  bucket = aws_s3_bucket.site.id
+# bucket public access - private
+resource "aws_s3_bucket_public_access_block" "bucket-public-access-block" {
+  bucket = aws_s3_bucket.site-bucket.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -15,8 +17,9 @@ resource "aws_s3_bucket_public_access_block" "site" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_policy" "site" {
-  bucket = aws_s3_bucket.site.id
+# bucket policy - allow cloudfront to read from bucket
+resource "aws_s3_bucket_policy" "bucket-policy" {
+  bucket = aws_s3_bucket.site-bucket.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -27,10 +30,10 @@ resource "aws_s3_bucket_policy" "site" {
           Service = "cloudfront.amazonaws.com"
         }
         Action = "s3:GetObject"
-        Resource = "${aws_s3_bucket.site.arn}/*"
+        Resource = "${aws_s3_bucket.site-bucket.arn}/*"
         Condition = {
           StringEquals = {
-            "AWS:SourceArn" = aws_cloudfront_distribution.site.arn
+            "AWS:SourceArn" = aws_cloudfront_distribution.cloudfront-distro.arn
           }
         }
       }
@@ -38,8 +41,9 @@ resource "aws_s3_bucket_policy" "site" {
   })
 }
 
+# upload index.html to bucket
 resource "aws_s3_object" "index" {
-  bucket       = aws_s3_bucket.site.id
+  bucket       = aws_s3_bucket.site-bucket.id
   key          = "index.html"
   source       = "../src/index.html"
   content_type = "text/html"

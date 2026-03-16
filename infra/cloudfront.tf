@@ -2,18 +2,17 @@
 resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = "farmtotablenearme-oac"
   origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
+  signing_behavior                  = "always" # specifies which requests cloudfront signs (authenticates)
+  signing_protocol                  = "sigv4" # how cloudfront signs (authenticates). "sigv4" is the only valid value
 }
 
-resource "aws_cloudfront_distribution" "site" {
+resource "aws_cloudfront_distribution" "cloudfront-distro" {
   enabled             = true
-  default_root_object = "index.html"
+  default_root_object = "index.html" # which object you want cloudfront to return
 
   origin {
-    domain_name = aws_s3_bucket.site.bucket_regional_domain_name
+    domain_name = aws_s3_bucket.site-bucket.bucket_regional_domain_name
     origin_id   = "s3-origin"
-
     origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
   }
 
@@ -24,12 +23,8 @@ resource "aws_cloudfront_distribution" "site" {
     allowed_methods = ["GET", "HEAD"]
     cached_methods  = ["GET", "HEAD"]
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
+    # managed cache policy for "Managed-CachingOptimized"
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
   }
 
   aliases = [

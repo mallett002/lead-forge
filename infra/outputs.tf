@@ -1,3 +1,3 @@
 output "cloudfront_url" {
-  value = aws_cloudfront_distribution.site.domain_name
+  value = aws_cloudfront_distribution.cloudfront-distro.domain_name
 }
