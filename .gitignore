@@ -2,3 +2,17 @@
 *.tfstate
 *.tfstate.backup
 .terraform/
+
+# Vite / React app
+lead-forge-spa/node_modules
+lead-forge-spa/dist
+lead-forge-spa/.env
+lead-forge-spa/.env.*
+lead-forge-spa/.DS_Store
+
+# Logs
+lead-forge-spa/*.log
+
+# Editor stuff
+lead-forge-spa/.vscode
+lead-forge-spa/.idea
