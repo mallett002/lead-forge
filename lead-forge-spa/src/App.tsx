@@ -11,8 +11,14 @@ interface Contact {
 function App() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
   const [careLevel, setCareLevel] = useState('')
   const [submitted, setSubmitted] = useState(false)
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -60,10 +66,19 @@ function App() {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                if (emailError) setEmailError('')
+              }}
+              onBlur={(e) => {
+                if (e.target.value && !validateEmail(e.target.value)) {
+                  setEmailError('Please enter a valid email address')
+                }
+              }}
               required
               placeholder="you@example.com"
             />
+            {emailError && <span className="error-message">{emailError}</span>}
           </div>
 
           <div className="form-group">
@@ -84,7 +99,7 @@ function App() {
           <button 
             type="submit"
             className="submit-btn"
-            disabled={Boolean(!name || !email || !careLevel)}
+            disabled={Boolean(!name || !email || !careLevel || !validateEmail(email))}
           >
             {submitted ? 'Sent!' : 'Get in Touch'}
           </button>

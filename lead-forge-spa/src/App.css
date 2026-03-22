@@ -69,6 +69,11 @@ h1 {
   opacity: 0.6;
 }
 
+.error-message {
+  font-size: 13px;
+  color: #dc3545;
+}
+
 .form-group select {
   cursor: pointer;
   appearance: none;
