@@ -16,12 +16,10 @@
     - `terraform apply "bootstrap"`
 
 - Create infra for website:
+    - manually create hosted zone in aws
     - `cd infra`
     - `terraform plan -out=tfplan`
     - `terraform apply "tfplan"`
 
-- Visit `https://lead-forge-website-s3-bucket.s3.amazonaws.com/index.html`
+- Visit `farmtotablenearme.com`
 
-
-### Setup
-- created hosted zone in AWS under lead-forge acct
