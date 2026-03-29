@@ -16,3 +16,7 @@ lead-forge-spa/*.log
 # Editor stuff
 lead-forge-spa/.vscode
 lead-forge-spa/.idea
+
+# Ignore Lambda build outputs
+lambdas/leads-events/bootstrap
+lambdas/leads-events/function.zip
