@@ -31,9 +31,19 @@ resource "aws_iam_role_policy" "lambda_execution_role_policy" {
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents"
+          "logs:PutLogEvents",
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:DescribeStream",
+          "dynamodb:GetRecords",
+          "dynamodb:GetShardIterator",
+          "dynamodb:ListStreams"
+        ]
+        Resource = aws_dynamodb_table.leads-dynamodb-table.stream_arn
       }
     ]
   })
@@ -41,7 +51,7 @@ resource "aws_iam_role_policy" "lambda_execution_role_policy" {
 
 # triggered off of change in leads table
 resource "aws_lambda_event_source_mapping" "dynamo_stream" {
-  event_source_arn  = aws_dynamodb_table.leads.stream_arn
+  event_source_arn  = aws_dynamodb_table.leads-dynamodb-table.stream_arn
   function_name = aws_lambda_function.leads_stream_lambda.arn
   starting_position = "LATEST"
 
