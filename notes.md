@@ -15,11 +15,10 @@
 - new record --> streams trigger -> lambda
     - send email for validation (with validation token)
     - email has link for validating
-- GSI on validation token (for fast lookups) or sort key?
 
 ### email link click
-- (send only validationToken) -> api gateway -> lambda
-    - looks up user by validationToken
+- (send validationToken & email) -> api gateway -> lambda
+    - looks up user by email (hash key)
     - updates record (leads table)
         - validated: true
         - validatedAt: timestamp
