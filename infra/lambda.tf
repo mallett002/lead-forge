@@ -18,7 +18,7 @@ resource "aws_iam_role" "lambda-execution-role" {
   assume_role_policy = data.aws_iam_policy_document.policy_lambda_exec_role.json
 }
 
-# Attach CloudWatch permissions to Lambda
+# Attach permissions to Lambda role (what the execution role can do)
 resource "aws_iam_role_policy" "lambda_execution_role_policy" {
   name = "lambda-cloudwatch-logs"
   role = aws_iam_role.lambda-execution-role.id
