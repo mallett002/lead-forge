@@ -19,7 +19,7 @@ resource "aws_iam_role" "lambda-execution-role" {
 }
 
 # Attach CloudWatch permissions to Lambda
-resource "aws_iam_role_policy" "lambda_cloudwatch_logs" {
+resource "aws_iam_role_policy" "lambda_execution_role_policy" {
   name = "lambda-cloudwatch-logs"
   role = aws_iam_role.lambda-execution-role.id
 
