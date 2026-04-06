@@ -79,3 +79,43 @@ resource "aws_s3_object" "lead-forge-website-files" {
     ignore_changes = [etag]
   }
 }
+
+# s3 bucket for assets for company (ex logo)
+resource "aws_s3_bucket" "lead-forge-assets" {
+  bucket = "lead-forge-assets"
+
+  tags = {
+    Name = "lead-forge"
+  }
+}
+
+# upload the logo
+resource "aws_s3_object" "logo" {
+  bucket       = aws_s3_bucket.lead-forge-assets.id
+  key          = "logo.png"
+  source       = "../assets/element-logo.png"
+  content_type = "image/png"
+}
+
+# allow publich acl/bucket wide policy
+resource "aws_s3_bucket_public_access_block" "allow_public" {
+  bucket = aws_s3_bucket.lead-forge-assets.id
+
+  block_public_acls   = false
+  block_public_policy = false
+}
+
+# allow public read (get object)
+resource "aws_s3_bucket_policy" "public_read" {
+  bucket = aws_s3_bucket.lead-forge-assets.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = "*"
+      Action = ["s3:GetObject"]
+      Resource = "${aws_s3_bucket.lead-forge-assets.arn}/*"
+    }]
+  })
+}

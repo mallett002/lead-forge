@@ -44,6 +44,15 @@ resource "aws_iam_role_policy" "lambda_execution_role_policy" {
           "dynamodb:ListStreams"
         ]
         Resource = aws_dynamodb_table.leads-dynamodb-table.stream_arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ses:SendEmail",
+          "ses:SendRawEmail"
+        ]
+        # TODO: should this be ses arn?
+        Resource = "*"
       }
     ]
   })
