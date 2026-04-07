@@ -22,7 +22,9 @@ type EmailSender interface {
 
 var sesClient EmailSender
 
+// init called by go runtime before main is called
 func init() {
+	// get empty context to work with
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		panic(err)
@@ -33,8 +35,8 @@ func init() {
 
 func Handler(ctx context.Context, event events.DynamoDBEvent) error {
 	for _, record := range event.Records {
-		recJSON, _ := json.Marshal(record)
-		fmt.Println("Processing record:", string(recJSON))
+		json, _ := json.Marshal(record)
+		fmt.Println("Processing record:", string(json))
 
 		switch record.EventName {
 		case "INSERT":

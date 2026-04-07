@@ -2,14 +2,16 @@ import { useState } from 'react'
 import './App.css'
 
 interface Contact {
-  name: string
+  first: string
+  last: string
   email: string
   careLevel: string
-  timestamp: Date
+  timestamp: string
 }
 
 function App() {
-  const [name, setName] = useState('')
+  const [first, setFirst] = useState('')
+  const [last, setLast] = useState('')
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
   const [careLevel, setCareLevel] = useState('')
@@ -24,16 +26,18 @@ function App() {
     e.preventDefault()
     
     const newContact: Contact = {
-      name,
+      first,
+      last,
       email,
       careLevel,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
     }
     
     console.log('Contact stored:', newContact)
     
     setSubmitted(true)
-    setName('')
+    setFirst('')
+    setLast('')
     setEmail('')
     setCareLevel('')
   }
@@ -49,14 +53,26 @@ function App() {
 
         <form onSubmit={handleSubmit} className="contact-form">
           <div className="form-group">
-            <label htmlFor="name">Name</label>
+            <label htmlFor="first">First Name</label>
             <input
               type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              id="first"
+              value={first}
+              onChange={(e) => setFirst(e.target.value)}
               required
-              placeholder="Your name"
+              placeholder="Joe"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="last">Last Name</label>
+            <input
+              type="text"
+              id="last"
+              value={last}
+              onChange={(e) => setLast(e.target.value)}
+              required
+              placeholder="Schmoe"
             />
           </div>
 
@@ -99,7 +115,7 @@ function App() {
           <button 
             type="submit"
             className="submit-btn"
-            disabled={Boolean(!name || !email || !careLevel || !validateEmail(email))}
+            disabled={Boolean(!first || !last || !email || !careLevel || !validateEmail(email))}
           >
             {submitted ? 'Sent!' : 'Get in Touch'}
           </button>

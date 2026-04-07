@@ -1,29 +1,37 @@
 package main
 
 import (
-	// "fmt"
 	"context"
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
-	// "github.com/stretchr/testify/assert"
-	// "github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/mock"
 )
 
-// TODO: why called here?
-// create mock sendEmail struct
-type mockSES struct {
-	called bool
+type MockEmailSender struct {
+	mock.Mock
 }
 
-func (s *mockSES) SendTemplatedEmail(ctx context.Context, params *ses.SendTemplatedEmailInput, optFns ...func(*ses.Options)) (*ses.SendTemplatedEmailOutput, error) {
-	s.called = true
-
-	return &ses.SendTemplatedEmailOutput{}, nil
+func (m *MockEmailSender) SendTemplatedEmail(ctx context.Context, params *ses.SendTemplatedEmailInput, optFns ...func(*ses.Options)) (*ses.SendTemplatedEmailOutput, error) {
+	args := m.Called(ctx, params)
+	return args.Get(0).(*ses.SendTemplatedEmailOutput), args.Error(1)
 }
 
-func TestLeadsTableStreamsLambda(t *testing.T) {
+func setupInsert() *MockEmailSender {
+	mockSender := &MockEmailSender{}
+
+	mockSender.On("SendTemplatedEmail", mock.Anything, mock.Anything).Return(&ses.SendTemplatedEmailOutput{}, nil).Once()
+
+	sesClient = mockSender
+
+	return mockSender
+}
+
+func TestLeadsTableStreamsLambdaInsert(t *testing.T) {
+	// given
+	mockSender := setupInsert()
+
 	event := events.DynamoDBEvent{
 		Records: []events.DynamoDBEventRecord{
 			{
@@ -38,16 +46,10 @@ func TestLeadsTableStreamsLambda(t *testing.T) {
 		},
 	}
 
-	mock := &mockSES{}
-	sesClient = mock
+	// when
+	Handler(context.Background(), event)
 
-	err := Handler(context.Background(), event)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if !mock.called {
-		t.Fatal("Failed. Mock not called.")
-	}
+	// then
+	mockSender.AssertCalled(t, "SendTemplatedEmail", mock.Anything, mock.Anything)
+	mockSender.AssertNumberOfCalls(t, "SendTemplatedEmail", 1)
 }
