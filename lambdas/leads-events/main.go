@@ -1,7 +1,5 @@
 package main
 
-// TODO: build it (build.sh). not sure it's all done though.  
-
 import (
 	"context"
 	"encoding/json"
