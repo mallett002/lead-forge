@@ -49,7 +49,6 @@ func TestLeadsTableStreamsLambdaInsertSuccess(t *testing.T) {
 	mockSender.AssertNumberOfCalls(t, "SendTemplatedEmail", 1)
 }
 
-// TODO: fix this test
 func TestLeadsTableStreamsLambdaInsertError(t *testing.T) {
 	// given
 	mockSender := &MockEmailSender{}
