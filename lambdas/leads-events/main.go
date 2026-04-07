@@ -52,6 +52,8 @@ func Handler(ctx context.Context, event events.DynamoDBEvent) error {
 }
 
 func handleInsert(ctx context.Context, record events.DynamoDBEventRecord) {
+	fmt.Println("processing insert")
+
 	if record.Change.NewImage == nil {
 		fmt.Println("No NewImage found in INSERT record")
 		return
@@ -68,19 +70,24 @@ func handleInsert(ctx context.Context, record events.DynamoDBEventRecord) {
 	fmt.Println("New lead inserted:", email)
 
 	// get new name
-	nameAttr, ok := record.Change.NewImage["name"]
-	if !ok || nameAttr.String() == "" {
-		fmt.Println("INSERT record missing name")
+	firstAttr, ok := record.Change.NewImage["first"]
+	if !ok || firstAttr.String() == "" {
+		fmt.Println("INSERT record missing first")
 		return
 	}
 
-	name := nameAttr.String()
-	fmt.Println("New lead inserted:", name)
+	first := firstAttr.String()
+	fmt.Println("New lead inserted:", first)
 
-	sendEmail(ctx, email, name)
+	err := sendValidationEmail(ctx, email, first)
+	if err != nil {
+		fmt.Printf("Error sendValidationEmail: %v", err)	
+	}
 }
 
 func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
+	fmt.Println("processing modify")
+
 	if record.Change.NewImage == nil || record.Change.OldImage == nil {
 		fmt.Println("Missing OldImage or NewImage in MODIFY record")
 		return
@@ -111,7 +118,7 @@ func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
 	}
 }
 
-func sendEmail(ctx context.Context, toEmail, name string) error {
+func sendValidationEmail(ctx context.Context, toEmail, name string) error {
 	input := &ses.SendTemplatedEmailInput{
 		Source: aws.String("your-verified-email@domain.com"),
 		Destination: &types.Destination{
@@ -124,6 +131,7 @@ func sendEmail(ctx context.Context, toEmail, name string) error {
 	}
 
 	_, err := sesClient.SendTemplatedEmail(ctx, input)
+
 	return err
 }
 
