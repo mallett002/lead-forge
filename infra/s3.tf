@@ -105,17 +105,27 @@ resource "aws_s3_bucket_public_access_block" "allow_public" {
   block_public_policy = false
 }
 
+# TODO: Add s3:PutBucketPolicy for arn:aws:s3:::lead-forge-assets to tf-user in the console, then re-run terraform plan/apply
 # allow public read (get object)
 resource "aws_s3_bucket_policy" "public_read" {
   bucket = aws_s3_bucket.lead-forge-assets.id
 
-  policy = jsonencode({
+    policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = "*"
-      Action = ["s3:GetObject"]
-      Resource = "${aws_s3_bucket.lead-forge-assets.arn}/*"
-    }]
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = "*"
+        Action = ["s3:GetObject"]
+        Resource = "${aws_s3_bucket.lead-forge-assets.arn}/*"
+      },
+      {
+        Effect = "Allow"
+        Principal = "*"
+        Action = ["s3:PutObject"]
+        Resource = "${aws_s3_bucket.lead-forge-assets.arn}/*"
+      },
+
+    ]
   })
 }

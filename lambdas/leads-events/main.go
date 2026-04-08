@@ -118,7 +118,7 @@ func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
 
 func sendValidationEmail(ctx context.Context, toEmail, name string) error {
 	input := &ses.SendTemplatedEmailInput{
-		Source: aws.String("your-verified-email@domain.com"),
+		Source: aws.String("mallett002@gmail.com"),
 		Destination: &types.Destination{
 			ToAddresses: []string{toEmail},
 		},

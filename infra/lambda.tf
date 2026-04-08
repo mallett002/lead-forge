@@ -51,8 +51,7 @@ resource "aws_iam_role_policy" "lambda_execution_role_policy" {
           "ses:SendEmail",
           "ses:SendRawEmail"
         ]
-        # TODO: should this be ses arn?
-        Resource = "*"
+        Resource = aws_ses_email_identity.ses-sender.arn
       }
     ]
   })
