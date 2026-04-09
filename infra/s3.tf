@@ -80,6 +80,9 @@ resource "aws_s3_object" "lead-forge-website-files" {
   }
 }
 
+
+
+# TODO: delete all this lead-forge-assets stuff and retry
 # s3 bucket for assets for company (ex logo)
 resource "aws_s3_bucket" "lead-forge-assets" {
   bucket = "lead-forge-assets"
@@ -105,9 +108,8 @@ resource "aws_s3_bucket_public_access_block" "allow_public" {
   block_public_policy = false
 }
 
-# TODO: Add s3:PutBucketPolicy for arn:aws:s3:::lead-forge-assets to tf-user in the console, then re-run terraform plan/apply
-# allow public read (get object)
-resource "aws_s3_bucket_policy" "public_read" {
+# allow public read (get object) and tf user to putObject (upload logo)
+resource "aws_s3_bucket_policy" "lead-forge-assets-policy" {
   bucket = aws_s3_bucket.lead-forge-assets.id
 
     policy = jsonencode({
@@ -121,11 +123,10 @@ resource "aws_s3_bucket_policy" "public_read" {
       },
       {
         Effect = "Allow"
-        Principal = "*"
+        Principal = "arn:aws:iam::904690835817:user/tf-user"
         Action = ["s3:PutObject"]
         Resource = "${aws_s3_bucket.lead-forge-assets.arn}/*"
-      },
-
+      }
     ]
   })
 }
