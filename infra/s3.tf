@@ -1,4 +1,8 @@
-# s3 bucket for website
+# S3 permissions
+# Public Access Block → “is public access even allowed?”
+# Bucket Policy → “if allowed, who gets access?”
+
+# s3 bucket for website ----------------------------------------------------------------------------------------
 resource "aws_s3_bucket" "site-bucket" {
   bucket = "farmtotablenearme-cloudfront-distro"
 
@@ -81,9 +85,7 @@ resource "aws_s3_object" "lead-forge-website-files" {
 }
 
 
-
-# TODO: delete all this lead-forge-assets stuff and retry
-# s3 bucket for assets for company (ex logo)
+# s3 bucket for assets for company (ex logo) ----------------------------------------------------------------------------------------
 resource "aws_s3_bucket" "lead-forge-assets" {
   bucket = "lead-forge-assets"
 
@@ -100,15 +102,22 @@ resource "aws_s3_object" "logo" {
   content_type = "image/png"
 }
 
-# allow publich acl/bucket wide policy
+# allow public bucket wide policy
 resource "aws_s3_bucket_public_access_block" "allow_public" {
   bucket = aws_s3_bucket.lead-forge-assets.id
 
-  block_public_acls   = false
+  # turn off acls (legacy)
+  ignore_public_acls  = true
+  block_public_acls   = true
+
+  # allow bucket policy to grant public access
   block_public_policy = false
+
+  # do not override public policies (allow public access)
+  restrict_public_buckets = false
 }
 
-# allow public read (get object) and tf user to putObject (upload logo)
+# allow public read (get object)
 resource "aws_s3_bucket_policy" "lead-forge-assets-policy" {
   bucket = aws_s3_bucket.lead-forge-assets.id
 
@@ -121,12 +130,6 @@ resource "aws_s3_bucket_policy" "lead-forge-assets-policy" {
         Action = ["s3:GetObject"]
         Resource = "${aws_s3_bucket.lead-forge-assets.arn}/*"
       },
-      {
-        Effect = "Allow"
-        Principal = "arn:aws:iam::904690835817:user/tf-user"
-        Action = ["s3:PutObject"]
-        Resource = "${aws_s3_bucket.lead-forge-assets.arn}/*"
-      }
     ]
   })
 }
