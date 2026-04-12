@@ -12,7 +12,9 @@ resource "aws_ses_email_identity" "ses-sender" {
 
 resource "aws_ses_template" "lead-forge-verification" {
   name    = "lead-forge-verification"
-  subject = "Greetings, {{name}}!"
-  html    = "<h1>Hello {{name}}!</h1>"
-  text    = "Hello {{name}},\r\n How you doing?."
+  subject = "Verify your email"
+
+  html = file("${path.module}/templates/verification.html")
+
+  text = "Hello {{name}}, verify here: {{verificationLink}}"
 }

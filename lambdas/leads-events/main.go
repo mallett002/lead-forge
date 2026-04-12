@@ -119,15 +119,18 @@ func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
 func sendVerificationEmail(ctx context.Context, toEmail, name string) error {
 	fromEmail := aws.String("mallett002@gmail.com")
 
+	templateData, _ := json.Marshal(map[string]string{
+		"name": name,
+		"verificationLink": "farmtotablenearme.com",
+	})
+
 	input := &ses.SendTemplatedEmailInput{
 		Source: fromEmail,
 		Destination: &types.Destination{
 			ToAddresses: []string{toEmail},
 		},
 		Template: aws.String("lead-forge-verification"),
-		TemplateData: aws.String(fmt.Sprintf(`{
-            "name": "%s"
-        }`, name)),
+		TemplateData: aws.String(string(templateData)),
 	}
 
 	json, _ := json.Marshal(input)
