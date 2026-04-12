@@ -65,7 +65,7 @@ func handleInsert(ctx context.Context, record events.DynamoDBEventRecord) {
 	}
 
 	email := emailAttr.String()
-	fmt.Println("New lead inserted:", email)
+	fmt.Println("New lead email:", email)
 
 	// get new name
 	firstAttr, ok := record.Change.NewImage["first"]
@@ -75,11 +75,11 @@ func handleInsert(ctx context.Context, record events.DynamoDBEventRecord) {
 	}
 
 	first := firstAttr.String()
-	fmt.Println("New lead inserted:", first)
+	fmt.Println("New lead first name:", first)
 
-	err := sendValidationEmail(ctx, email, first)
+	err := sendVerificationEmail(ctx, email, first)
 	if err != nil {
-		fmt.Printf("Error sendValidationEmail: %v", err)	
+		fmt.Printf("Error sendVerificationEmail: %v", err)	
 	}
 }
 
@@ -116,13 +116,15 @@ func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
 	}
 }
 
-func sendValidationEmail(ctx context.Context, toEmail, name string) error {
+func sendVerificationEmail(ctx context.Context, toEmail, name string) error {
+	fromEmail := aws.String("mallett002@gmail.com")
+
 	input := &ses.SendTemplatedEmailInput{
-		Source: aws.String("mallett002@gmail.com"),
+		Source: fromEmail,
 		Destination: &types.Destination{
 			ToAddresses: []string{toEmail},
 		},
-		Template: aws.String("leadforge-welcome"),
+		Template: aws.String("lead-forge-verification"),
 		TemplateData: aws.String(fmt.Sprintf(`{
             "name": "%s"
         }`, name)),

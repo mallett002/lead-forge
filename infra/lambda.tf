@@ -49,7 +49,8 @@ resource "aws_iam_role_policy" "lambda_execution_role_policy" {
         Effect = "Allow"
         Action = [
           "ses:SendEmail",
-          "ses:SendRawEmail"
+          "ses:SendRawEmail",
+          "ses:SendTemplatedEmail"
         ]
         Resource = aws_ses_email_identity.ses-sender.arn
       }
