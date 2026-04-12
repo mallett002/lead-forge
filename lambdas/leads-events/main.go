@@ -130,9 +130,17 @@ func sendVerificationEmail(ctx context.Context, toEmail, name string) error {
         }`, name)),
 	}
 
-	_, err := sesClient.SendTemplatedEmail(ctx, input)
+	json, _ := json.Marshal(input)
+	fmt.Println("Sending email with template:", string(json))
 
-	return err
+	out, err := sesClient.SendTemplatedEmail(ctx, input)
+	if err != nil {
+		fmt.Println("SES ERROR:", err)
+		return err
+	}
+
+	fmt.Println("SES SUCCESS:", out)
+	return nil
 }
 
 func main() {
