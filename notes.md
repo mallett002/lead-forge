@@ -38,4 +38,11 @@
 - Add basic logging/metrics
 
 
+### ses
+- identity: email or domain identities (the who mail gets sent from)
+    - domain better and can use DKIM (domain keys)
+    - probably need this to prevent mail going to spam
+- need to verify sender email
+- can use templates to interpolate variables
+- might be in sandbox mode, need to turn that off
 
