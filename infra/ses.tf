@@ -13,9 +13,7 @@
 resource "aws_ses_template" "lead-forge-verification" {
   name    = "lead-forge-verification"
   subject = "Verify your email"
-
   html = file("${path.module}/templates/verification.html")
-
   text = "Hello {{name}}, verify here: {{verificationLink}}"
 }
 
@@ -28,11 +26,6 @@ resource "aws_ses_configuration_set" "config_set" {
   delivery_options {
     tls_policy = "Require"  #If the value is Optional, messages can be delivered in plain text if a TLS connection can't be established. 
   }
-
-  # Not sure what this should be
-  # tracking_options {
-  #   custom_redirect_domain = var.custom_redirect_domain #   "sub.example.com"
-  # }
 }
 
 # domain identity for farmtotablenearme.com
@@ -47,7 +40,7 @@ resource "aws_ses_domain_dkim" "ses_dkim" {
   domain = aws_ses_domain_identity.ses_domain.domain
 }
 
-# # DKIM selectors: CNAME records that point to AWS-hosted public keys used to verify SES-signed emails
+# DKIM selectors: CNAME records that point to AWS-hosted public keys used to verify SES-signed emails
 resource "aws_route53_record" "ses_dkim_record" {
   count   = length(aws_ses_domain_dkim.ses_dkim.dkim_tokens)
   zone_id = data.aws_route53_zone.main.zone_id
