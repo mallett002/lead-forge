@@ -40,12 +40,16 @@ resource "aws_ses_domain_identity" "ses_domain" {
   domain = "farmtotablenearme.com"
 }
 
+# DKIM: "Domain Keys for Identified Mail"
+# Proves that email sent from your domain really comes from your domain and wasn't tampered with
+# mail providers (gmail) look up your public key in DNS to verify
 resource "aws_ses_domain_dkim" "ses_dkim" {
   domain = aws_ses_domain_identity.ses_domain.domain
 }
 
+# # DKIM selectors: CNAME records that point to AWS-hosted public keys used to verify SES-signed emails
 resource "aws_route53_record" "ses_dkim_record" {
-  count   = 3
+  count   = length(aws_ses_domain_dkim.ses_dkim.dkim_tokens)
   zone_id = data.aws_route53_zone.main.zone_id
   name    = "${aws_ses_domain_dkim.ses_dkim.dkim_tokens[count.index]}._domainkey"
   type    = "CNAME"
