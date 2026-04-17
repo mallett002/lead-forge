@@ -117,7 +117,7 @@ func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
 }
 
 func sendVerificationEmail(ctx context.Context, toEmail, name string) error {
-	fromEmail := aws.String("mallett002@gmail.com")
+	fromEmail := aws.String("noreply@farmtotablenearme.com")
 
 	templateData, _ := json.Marshal(map[string]string{
 		"name": name,
