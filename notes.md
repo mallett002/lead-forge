@@ -42,7 +42,8 @@
 - identity: email or domain identities (the who mail gets sent from)
     - domain better and can use DKIM (domain keys)
     - probably need this to prevent mail going to spam
-- need to verify sender email
+- domain with DKIM can auto verify this idenity to send
 - can use templates to interpolate variables
-- might be in sandbox mode, need to turn that off
+- In sandbox mode, need to request production access.
+    - They'll send you an email you need to respond to, describing how you will use SES
 
