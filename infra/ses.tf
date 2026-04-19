@@ -5,11 +5,6 @@
 # sends email
 
 
-# allow lambda to send email via ses (exec role)
-# resource "aws_ses_email_identity" "ses-sender" {
-#   email = "mallett002@gmail.com"
-# }
-
 resource "aws_ses_template" "lead-forge-verification" {
   name    = "lead-forge-verification"
   subject = "Verify your email"
