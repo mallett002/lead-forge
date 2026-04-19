@@ -47,3 +47,5 @@
 - In sandbox mode, need to request production access.
     - They'll send you an email you need to respond to, describing how you will use SES
 
+### api gateway
+- api_url: "https://o4mjmdajh9.execute-api.us-east-1.amazonaws.com"
