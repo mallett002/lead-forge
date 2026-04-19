@@ -32,6 +32,25 @@ resource "aws_apigatewayv2_stage" "api_gateway_stage" {
   }
 }
 
+# give api gateway a custom domain
+resource "aws_apigatewayv2_domain_name" "api_domain" {
+  depends_on  = [aws_acm_certificate_validation.cert]
+  domain_name = "api.farmtotablenearme.com"
+
+  domain_name_configuration {
+    certificate_arn = aws_acm_certificate.cert.arn
+    endpoint_type   = "REGIONAL"
+    security_policy = "TLS_1_2"
+  }
+}
+
+# Connect api.farmtotablenearme.com to API stage
+resource "aws_apigatewayv2_api_mapping" "api_mapping" {
+  api_id      = aws_apigatewayv2_api.http_api.id
+  domain_name = aws_apigatewayv2_domain_name.api_domain.id
+  stage       = aws_apigatewayv2_stage.api_gateway_stage.id
+}
+
 # ****************************************************
 # Lambda Integrations
 # ****************************************************
@@ -66,6 +85,3 @@ resource "aws_apigatewayv2_stage" "api_gateway_stage" {
 #   source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/POST/leads"
 # }
 
-output "api_url" {
-  value = aws_apigatewayv2_api.http_api.api_endpoint
-}
