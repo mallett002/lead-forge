@@ -28,7 +28,8 @@ resource "aws_cloudfront_distribution" "cloudfront-distro" {
   }
 
   aliases = [
-    var.domain_name
+    var.domain_name,
+    "www.${var.domain_name}"
   ]
 
   viewer_certificate {
