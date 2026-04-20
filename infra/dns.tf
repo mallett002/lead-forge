@@ -1,3 +1,10 @@
+# 1. aws_acm_certificate — You request a cert, AWS generates validation DNS records (stored in domain_validation_options)
+# 2. aws_route53_record.cert_validation — Terraform reads those generated options and creates actual DNS records in Route53 (TXT or CNAME records)
+# 3. AWS checks — AWS periodically checks your DNS for those records to prove you own the domain
+# 4. aws_acm_certificate_validation — Waiter that blocks until status = "Issued"
+# So cert_validation doesn't "validate" itself — it creates the DNS records that AWS then checks.
+# The actual validation is done by AWS reading those DNS records.
+
 # The cert for farmtotablenearme.com
 resource "aws_acm_certificate" "cert" {
   provider          = aws.us_east_1 # All tf resources accept this. Cloudfront needs to be in us-east-1
@@ -44,6 +51,7 @@ resource "aws_route53_record" "www" {
 # Validate the certs automatically through DNS
 # Creates TXT/CNAME records that ACM checks for domain ownership
 # Could technically delete them after validation finished, but harmless
+# example for how this works: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acm_certificate_validation
 resource "aws_route53_record" "cert_validation" {
   for_each = {
     for dvo in aws_acm_certificate.cert.domain_validation_options :

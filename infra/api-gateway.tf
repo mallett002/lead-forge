@@ -34,11 +34,10 @@ resource "aws_apigatewayv2_stage" "api_gateway_stage" {
 
 # give api gateway a custom domain
 resource "aws_apigatewayv2_domain_name" "api_domain" {
-  depends_on  = [aws_acm_certificate_validation.cert]
   domain_name = "api.farmtotablenearme.com"
 
   domain_name_configuration {
-    certificate_arn = aws_acm_certificate.cert.arn
+    certificate_arn = aws_acm_certificate_validation.cert.certificate_arn
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
