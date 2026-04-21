@@ -56,15 +56,16 @@ resource "aws_apigatewayv2_api_mapping" "api_mapping" {
 
 # Create lead handler ********************************
 # The Integration (Connecting API to Lambda)
-# resource "aws_apigatewayv2_integration" "create_lead_integration" {
-#   api_id           = aws_apigatewayv2_api.http_api.id
-#   integration_type = "AWS_PROXY"
-#
-#   description               = "Handler for creating a lead"
-#   integration_method        = "POST"
-#   payload_format_version    = "2.0"
-#   integration_uri           = aws_lambda_function.create_lead_lambda.invoke_arn # TODO: Create lambda
-# }
+resource "aws_apigatewayv2_integration" "create_lead_integration" {
+  api_id           = aws_apigatewayv2_api.http_api.id
+  integration_type = "AWS_PROXY"
+
+  description               = "Handler for creating a lead"
+  integration_method        = "POST"
+  payload_format_version    = "2.0"
+  integration_uri           = aws_lambda_function.create_lead_lambda.invoke_arn
+}
+
 #
 # # The Route (endpoint for creating lead)
 # resource "aws_apigatewayv2_route" "create_leads_route" {
