@@ -66,8 +66,8 @@ resource "aws_apigatewayv2_integration" "create_lead_integration" {
   integration_uri           = aws_lambda_function.create_lead_lambda.invoke_arn
 }
 
-#
-# # The Route (endpoint for creating lead)
+# TODO: Get authorizer working before opening api to world
+# The Route (endpoint for creating lead)
 # resource "aws_apigatewayv2_route" "create_leads_route" {
 #   api_id    = aws_apigatewayv2_api.http_api.id
 #   route_key = "POST /leads"

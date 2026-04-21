@@ -48,4 +48,15 @@
     - They'll send you an email you need to respond to, describing how you will use SES
 
 ### api gateway
-- api_url: "https://o4mjmdajh9.execute-api.us-east-1.amazonaws.com"
+- domain: "api.farmtotablenearme.com"
+```sh
+curl -X POST https://api.farmtotablenearme.com/leads \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "mallett002@gmail.com",
+    "first": "John",
+    "last": "Doe",
+    "careLevel": "3.5",
+    "timestamp": "2026-04-21T10:30:00Z"
+  }'
+```
