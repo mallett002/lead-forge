@@ -3,10 +3,8 @@
 # endpoint: POST /leads/verify (verifies lead)
 # endpoint: DELETE /leads/{email} ??
 
-# TODO: Add a WAF (aws_wafv2_web_acl)??
-
 # ****************************************************
-# The API Container
+# API Container
 # ****************************************************
 resource "aws_apigatewayv2_api" "http_api" {
   name          = "v2-lambda-api"
@@ -18,6 +16,51 @@ resource "aws_apigatewayv2_api" "http_api" {
     allow_methods = ["POST"]
     allow_headers = ["content-type"]
   }
+}
+
+# ****************************************************
+# WAF - 5 requests every 60 seconds
+# ****************************************************
+resource "aws_wafv2_web_acl" "newsletter_waf" {
+  name        = "newsletter-waf"
+  description = "Extreme rate limiting for newsletter signup"
+  scope       = "REGIONAL"
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "extreme-rate-limit"
+    priority = 0
+    action {
+      block {}
+    }
+    statement {
+      rate_based_statement {
+        limit              = 5                      # 5 requests
+        aggregate_key_type = "IP"
+        evaluation_window_sec = 60                 # per minute (not 5 min)
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "extreme-rate-limit"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "newsletter-waf"
+    sampled_requests_enabled   = true
+  }
+}
+
+# associate waf with api gateway
+resource "aws_wafv2_web_acl_association" "api_gateway_waf" {
+  web_acl_arn = aws_wafv2_web_acl.newsletter_waf.arn
+  resource_arn = aws_apigatewayv2_api.http_api.arn
 }
 
 # The Stage (To make it live)
@@ -66,32 +109,8 @@ resource "aws_apigatewayv2_integration" "create_lead_integration" {
   integration_uri           = aws_lambda_function.create_lead_lambda.invoke_arn
 }
 
-# TODO: Get authorizer working before opening api to world
-# Since the frontend will generate a JWT, here's the decision:
-# Options for your setup:
-# Approach	JWT Validation	Effort	Notes
-# Cognito + JWT authorizer	Built-in	Low	Cognito handles sign-up/login, frontend gets JWT from Cognito
-# Custom JWT + Lambda authorizer	Your Lambda	Medium	Frontend sends JWT, your auth Lambda verifies it
-# API Key	None	Lowest	Not real auth (just throttling/some protection)
-# My recommendation: Cognito + JWT authorizer
-# Reasons:
-# - No auth Lambda needed
-# - Cognito manages users, password reset, etc.
-# - Frontend gets JWT directly from Cognito
-# - API Gateway validates JWT automatically
-# - You don't need to write auth logic
-# Flow:
-# 1. Frontend → Cognito (login/signup) → gets JWT
-# 2. Frontend → API request with `Authorization: Bearer
-resource "aws_apigatewayv2_authorizer" "example" {
-  api_id                            = aws_apigatewayv2_api.http_api.id
-  authorizer_type                   = "REQUEST"
-  authorizer_uri                    = aws_lambda_function.example.invoke_arn
-  identity_sources                  = ["$request.header.Authorization"]
-  name                              = "example-authorizer"
-  authorizer_payload_format_version = "2.0"
-}
 
+# TODO: comment in when ready
 # The Route (endpoint for creating lead)
 # resource "aws_apigatewayv2_route" "create_leads_route" {
 #   api_id    = aws_apigatewayv2_api.http_api.id
