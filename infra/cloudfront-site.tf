@@ -1,3 +1,5 @@
+# This defines a cloudfront distribution for a static site in s3
+
 # Allow cloudfront to access s3 without making s3 bucket public
 resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = "farmtotablenearme-oac"

@@ -18,51 +18,6 @@ resource "aws_apigatewayv2_api" "http_api" {
   }
 }
 
-# ****************************************************
-# WAF - 5 requests every 60 seconds
-# ****************************************************
-resource "aws_wafv2_web_acl" "newsletter_waf" {
-  name        = "newsletter-waf"
-  description = "Extreme rate limiting for newsletter signup"
-  scope       = "REGIONAL"
-
-  default_action {
-    allow {}
-  }
-
-  rule {
-    name     = "extreme-rate-limit"
-    priority = 0
-    action {
-      block {}
-    }
-    statement {
-      rate_based_statement {
-        limit              = 5                      # 5 requests
-        aggregate_key_type = "IP"
-        evaluation_window_sec = 60                 # per minute (not 5 min)
-      }
-    }
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "extreme-rate-limit"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  visibility_config {
-    cloudwatch_metrics_enabled = true
-    metric_name                = "newsletter-waf"
-    sampled_requests_enabled   = true
-  }
-}
-
-# associate waf with api gateway
-resource "aws_wafv2_web_acl_association" "api_gateway_waf" {
-  web_acl_arn = aws_wafv2_web_acl.newsletter_waf.arn
-  resource_arn = aws_apigatewayv2_api.http_api.arn
-}
-
 # The Stage (To make it live)
 resource "aws_apigatewayv2_stage" "api_gateway_stage" {
   api_id      = aws_apigatewayv2_api.http_api.id

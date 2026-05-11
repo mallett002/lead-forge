@@ -34,7 +34,6 @@ resource "aws_route53_record" "site-alias-record" {
   }
 }
 
-# TODO: This didn't actually work (still can't resolve www.farmtotablenearme.com)
 # alias record for subdomain (www.)
 resource "aws_route53_record" "www" {
   zone_id = data.aws_route53_zone.main.zone_id
@@ -72,7 +71,8 @@ resource "aws_route53_record" "cert_validation" {
 
 # Alias record for api gateway (api.)
 # Note - We are sharing the cert for cloudfront and api gateway
-# This isn't always best, i.e., if you want to have api gateway in other region that us-east-1 (cloudfront needs to be in us-east-1)
+# This isn't always best, i.e., if you want to have api gateway in other region that us-east-1 
+# (cloudfront needs to be in us-east-1)
 resource "aws_route53_record" "api_gateway_alias_record" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = "api.${var.domain_name}"
