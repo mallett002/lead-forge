@@ -69,18 +69,18 @@ resource "aws_route53_record" "cert_validation" {
   records = [each.value.record]
 }
 
-# Alias record for api gateway (api.)
+# Alias record for cloudfront -> api gateway (api.)
 # Note - We are sharing the cert for cloudfront and api gateway
 # This isn't always best, i.e., if you want to have api gateway in other region that us-east-1 
 # (cloudfront needs to be in us-east-1)
-resource "aws_route53_record" "api_gateway_alias_record" {
+resource "aws_route53_record" "api_alias_record" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = "api.${var.domain_name}"
   type    = "A"
 
   alias {
-    name                   = aws_apigatewayv2_domain_name.api_domain.domain_name_configuration[0].target_domain_name
-    zone_id                = aws_apigatewayv2_domain_name.api_domain.domain_name_configuration[0].hosted_zone_id
+    name                   = aws_cloudfront_distribution.api.domain_name
+    zone_id                = aws_cloudfront_distribution.api.hosted_zone_id
     evaluate_target_health = false
   }
 }
