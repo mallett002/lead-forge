@@ -12,6 +12,8 @@
 # 2. Custom origin for API Gateway
 # For HTTP API v2 with Lambda, you may need origin_request_policy to properly forward headers/body.
 
+# TODO: ADD WAF with cloudfront
+
 resource "aws_cloudfront_distribution" "api" {
   enabled = true
 
