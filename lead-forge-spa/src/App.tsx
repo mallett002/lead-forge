@@ -6,7 +6,7 @@ interface Contact {
   last: string
   email: string
   careLevel: string
-  timestamp: string
+  createdAt: string
 }
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
       last,
       email,
       careLevel,
-      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     }
     
     try {
