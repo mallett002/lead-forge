@@ -52,13 +52,15 @@
 
 #### POST /leads (create a lead)
 ```sh
+
 curl -X POST https://api.farmtotablenearme.com/leads \
   -H "Content-Type: application/json" \
   -d '{
     "email": "mallett002@gmail.com",
     "first": "John",
     "last": "Doe",
-    "careLevel": "3.5",
+    "careLevel": "minimal",
     "createdAt": "2026-06-07T13:18:58.718Z"
   }'
+
 ```
