@@ -57,6 +57,6 @@ curl -X POST https://api.farmtotablenearme.com/leads \
     "first": "John",
     "last": "Doe",
     "careLevel": "3.5",
-    "timestamp": "2026-04-21T10:30:00Z"
+    "timestamp": "2026-06-07T13:18:58.718Z"
   }'
 ```

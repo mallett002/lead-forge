@@ -64,23 +64,21 @@ resource "aws_apigatewayv2_integration" "create_lead_integration" {
   integration_uri           = aws_lambda_function.create_lead_lambda.invoke_arn
 }
 
-
-# TODO: comment in when ready
 # The Route (endpoint for creating lead)
-# resource "aws_apigatewayv2_route" "create_leads_route" {
-#   api_id    = aws_apigatewayv2_api.http_api.id
-#   route_key = "POST /leads"
-#   target    = "integrations/${aws_apigatewayv2_integration.create_lead_integration.id}"
-# }
-#
+resource "aws_apigatewayv2_route" "create_leads_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "POST /leads"
+  target    = "integrations/${aws_apigatewayv2_integration.create_lead_integration.id}"
+}
+
 # # Allow APIGW to trigger Lambda
-# resource "aws_lambda_permission" "lambda_permission_create_lead" {
-#   statement_id  = "AllowExecutionFromAPIGateway"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.create_lead_lambda.function_name
-#   principal     = "apigateway.amazonaws.com"
-#
-#   # only allow POST /leads to trigger lambda
-#   source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/POST/leads"
-# }
+resource "aws_lambda_permission" "lambda_permission_create_lead" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.create_lead_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # only allow POST /leads to trigger lambda
+  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/POST/leads"
+}
 

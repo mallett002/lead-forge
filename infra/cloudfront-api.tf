@@ -2,16 +2,6 @@
 
 # example: https://github.com/aws-samples/integrate-httpapi-with-cloudfront-and-waf/blob/main/cloudfront.tf
 
-# potiential issues:
-# 1. POST not forwarded
-# POST requests need to be explicitly forwarded:
-# allowed_methods  = ["GET", "HEAD", "POST"]
-# cached_methods   = ["GET", "HEAD"]  # POST should NOT be cached
-# viewer_request_policy = # or use forward in origin request policy
-
-# 2. Custom origin for API Gateway
-# For HTTP API v2 with Lambda, you may need origin_request_policy to properly forward headers/body.
-
 # TODO: ADD WAF with cloudfront
 
 resource "aws_cloudfront_distribution" "api" {
@@ -34,8 +24,8 @@ resource "aws_cloudfront_distribution" "api" {
   ]
 
   default_cache_behavior {
-    allowed_methods  = ["HEAD", "GET"]
-    cached_methods   = ["GET", "HEAD"]
+    allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cached_methods   = ["HEAD", "GET"]
     target_origin_id = "http_api_origin"
 
     # uses CachingDisabled: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html

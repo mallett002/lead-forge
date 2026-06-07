@@ -22,7 +22,7 @@ function App() {
     return emailRegex.test(email)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     const newContact: Contact = {
@@ -33,20 +33,31 @@ function App() {
       timestamp: new Date().toISOString(),
     }
     
-    console.log('Contact stored:', newContact)
+    try {
+        const res = await fetch('https://api.farmtotablenearme.com/leads', {
+            method: 'POST',
+            body: JSON.stringify(newContact),
+        });
+
+        if (res.ok) {
+            console.log(`Response not ok. status ${res.status}`);
+        }
+    } catch (error) {
+        console.log(`Error creating lead: ${error}`);
+    }
     
-    setSubmitted(true)
-    setFirst('')
-    setLast('')
-    setEmail('')
-    setCareLevel('')
+    setSubmitted(true);
+    setFirst('');
+    setLast('');
+    setEmail('');
+    setCareLevel('');
   }
 
   return (
     <div className="banner-container">
       <div className="banner">
         <img src="/element-logo.png" alt="Element" className="logo" />
-        <h1>Connect with Element</h1>
+        <h1>Connect with Element!</h1>
         <p className="tagline">
           Discover how we can support your needs
         </p>
