@@ -20,3 +20,5 @@ lead-forge-spa/.idea
 # Ignore Lambda build outputs
 lambdas/leads-events/bootstrap
 lambdas/leads-events/function.zip
+lambdas/create-lead/bootstrap
+lambdas/create-lead/function.zip

@@ -47,3 +47,20 @@
 - In sandbox mode, need to request production access.
     - They'll send you an email you need to respond to, describing how you will use SES
 
+### api gateway
+- domain: "api.farmtotablenearme.com"
+
+#### POST /leads (create a lead)
+```sh
+
+curl -X POST https://api.farmtotablenearme.com/leads \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "mallett002@gmail.com",
+    "first": "John",
+    "last": "Doe",
+    "careLevel": "minimal",
+    "createdAt": "2026-06-07T13:18:58.718Z"
+  }'
+
+```

@@ -78,10 +78,6 @@ resource "aws_s3_object" "lead-forge-website-files" {
     ? "no-cache, no-store, must-revalidate"
     : "public, max-age=31536000, immutable"
   )
-
-  lifecycle {
-    ignore_changes = [etag]
-  }
 }
 
 
