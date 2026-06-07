@@ -33,7 +33,6 @@ function App() {
       createdAt: new Date().toISOString(),
     }
     
-    // TODO: this isn't updating in UI
     try {
         const res = await fetch('https://api.farmtotablenearme.com/leads', {
             method: 'POST',
