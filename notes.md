@@ -49,6 +49,8 @@
 
 ### api gateway
 - domain: "api.farmtotablenearme.com"
+
+#### POST /leads (create a lead)
 ```sh
 curl -X POST https://api.farmtotablenearme.com/leads \
   -H "Content-Type: application/json" \
