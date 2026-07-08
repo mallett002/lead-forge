@@ -1,4 +1,10 @@
 # This defines a cloudfront distribution for a static site in s3
+# This CF distribution:
+# - has domain name of farmtotablenearme.com
+# - has origin of s3 (static site)
+# - able to access s3 origin without the bucket being public
+# - tied to ssl cert for farmtotablenearme.com
+# - only allows US and Brazil
 
 # Allow cloudfront to access s3 without making s3 bucket public
 resource "aws_cloudfront_origin_access_control" "oac" {
@@ -25,7 +31,7 @@ resource "aws_cloudfront_distribution" "cloudfront-distro" {
     allowed_methods = ["GET", "HEAD"]
     cached_methods  = ["GET", "HEAD"]
 
-    # managed cache policy for "Managed-CachingOptimized"
+    # managed cache policy for "Managed-CachingOptimized" (see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html)
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
   }
 
@@ -36,12 +42,14 @@ resource "aws_cloudfront_distribution" "cloudfront-distro" {
 
   viewer_certificate {
     acm_certificate_arn = aws_acm_certificate_validation.cert.certificate_arn
-    ssl_support_method  = "sni-only"
+    ssl_support_method  = "sni-only" # sni-only cloudfront serves cert per-request rather than a dedicated static IP
   }
 
   restrictions {
     geo_restriction {
-      restriction_type = "none"
+      restriction_type = "whitelist"
+      # Allow only United States and Brazil
+      locations        = ["US", "BR"]
     }
   }
 }

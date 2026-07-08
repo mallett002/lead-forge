@@ -37,7 +37,8 @@ resource "aws_ses_domain_dkim" "ses_dkim" {
 
 # DKIM selectors: CNAME records that point to AWS-hosted public keys used to verify SES-signed emails
 resource "aws_route53_record" "ses_dkim_record" {
-  count   = length(aws_ses_domain_dkim.ses_dkim.dkim_tokens)
+  # count   = length(aws_ses_domain_dkim.ses_dkim.dkim_tokens) TODO: see if can set this back
+  count   = 3
   zone_id = data.aws_route53_zone.main.zone_id
   name    = "${aws_ses_domain_dkim.ses_dkim.dkim_tokens[count.index]}._domainkey"
   type    = "CNAME"
