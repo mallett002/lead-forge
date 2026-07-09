@@ -1,6 +1,10 @@
 # This defines a cloudfront distribution for the api
-
-# example: https://github.com/aws-samples/integrate-httpapi-with-cloudfront-and-waf/blob/main/cloudfront.tf
+# cloudfront -> api-gateway -> lambdas
+# - origin is api-gateway
+# - alias is api.farmtotablenearme.com
+# - caching is disabled
+# - only accessible USA & Brazil
+# - example: https://github.com/aws-samples/integrate-httpapi-with-cloudfront-and-waf/blob/main/cloudfront.tf
 
 # TODO: ADD WAF with cloudfront
 
