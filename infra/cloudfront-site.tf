@@ -18,6 +18,10 @@ resource "aws_cloudfront_distribution" "cloudfront-distro" {
   enabled             = true
   default_root_object = "index.html" # which object you want cloudfront to return
 
+  tags = {
+    Name = "lead-forge"
+  }
+
   origin {
     domain_name = aws_s3_bucket.site-bucket.bucket_regional_domain_name
     origin_id   = "s3-origin"
