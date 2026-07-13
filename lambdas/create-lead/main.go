@@ -8,19 +8,22 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-lambda-go/lambda"
-    "github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-    "github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/aws/aws-lambda-go/events"
 )
 
 
 type Lead struct {
-	Email     string  `json:"email" dynamodbav:"email"`
-	First     string  `json:"first" dynamodbav:"first"`
-	Last      string  `json:"last" dynamodbav:"last"`
-	CareLevel string  `json:"careLevel" dynamodbav:"careLevel"`
-	CreatedAt string  `json:"createdAt" dynamodbav:"createdAt"`
+	Email           string  `json:"email" dynamodbav:"email"`
+	First           string  `json:"first" dynamodbav:"first"`
+	Last            string  `json:"last" dynamodbav:"last"`
+	CareLevel       string  `json:"careLevel" dynamodbav:"careLevel"`
+	CreatedAt       string  `json:"createdAt" dynamodbav:"createdAt"`
+	Validated       bool    `json:"validated" dynamodbav:"validated"`
+	ValidationToken *string `json:"validationToken" dynamodbav:"validationToken"`
 }
 
 var (
@@ -56,6 +59,10 @@ func HandleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (ev
 		log.Printf("failed to marshal lead, %v", err)
 		return events.APIGatewayProxyResponse{StatusCode: 500}, err
 	}
+
+    // add validated and validationToken to dynamo insert
+	item["validated"] = &types.AttributeValueMemberBOOL{Value: false}
+	item["validationToken"] = &types.AttributeValueMemberNULL{Value: true}
 
 	_, err = dbClient.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		TableName: aws.String("leads"),
