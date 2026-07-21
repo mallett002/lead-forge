@@ -1,5 +1,18 @@
 package main
 
+/*
+* - This lambda is triggered when an update or insert occcurs on the leads table
+
+* Sends validation email:
+* - User signs up, gets a record created in leads table
+* - Insert triggers this lambda. This lambda sends an email to validate their email.
+* 
+* Sends full welcome email:
+* - User clicks validation link which calls api
+* - api updates validation fields to mark user as validated
+* - Modify leads table triggers this lambda that sends full welcome email
+*/
+
 import (
 	"context"
 	"encoding/json"
@@ -57,7 +70,7 @@ func handleInsert(ctx context.Context, record events.DynamoDBEventRecord) {
 		return
 	}
 
-	// get new email
+	// get new email address
 	emailAttr, ok := record.Change.NewImage["email"]
 	if !ok || emailAttr.String() == "" {
 		fmt.Println("INSERT record missing email")
@@ -77,7 +90,10 @@ func handleInsert(ctx context.Context, record events.DynamoDBEventRecord) {
 	first := firstAttr.String()
 	fmt.Println("New lead first name:", first)
 
-	err := sendVerificationEmail(ctx, email, first)
+	validationToken := firstAttr.String()
+	fmt.Println("New lead validationToken:", validationToken)
+
+	err := sendVerificationEmail(ctx, email, first, validationToken)
 	if err != nil {
 		fmt.Printf("Error sendVerificationEmail: %v", err)	
 	}
@@ -116,12 +132,13 @@ func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
 	}
 }
 
-func sendVerificationEmail(ctx context.Context, toEmail, name string) error {
+func sendVerificationEmail(ctx context.Context, toEmail, name string, validationToken string) error {
 	fromEmail := aws.String("noreply@farmtotablenearme.com")
 
 	templateData, _ := json.Marshal(map[string]string{
 		"name": name,
-		"verificationLink": "farmtotablenearme.com",
+        // TODO: make this endpoint
+        "verificationLink": fmt.Sprintf("https://api.farmtotablenearme.com/validate?email=%s&token=%s", toEmail, validationToken),
 	})
 
 	input := &ses.SendTemplatedEmailInput{
