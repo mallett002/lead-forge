@@ -2,6 +2,11 @@
 # Public Access Block → “is public access even allowed?”
 # Bucket Policy → “if allowed, who gets access?”
 
+# S3 bucket for static site
+# - completely private bucket
+# - only cloudfront distro for static site can access
+# - site is uploaded to s3 from built static dist of React SPA
+
 # s3 bucket for website ----------------------------------------------------------------------------------------
 resource "aws_s3_bucket" "site-bucket" {
   bucket = "farmtotablenearme-cloudfront-distro"
@@ -82,6 +87,9 @@ resource "aws_s3_object" "lead-forge-website-files" {
 
 
 # s3 bucket for assets for company (ex logo) ----------------------------------------------------------------------------------------
+# - public bucket, public read allowed
+# - company logo
+
 resource "aws_s3_bucket" "lead-forge-assets" {
   bucket = "lead-forge-assets"
 

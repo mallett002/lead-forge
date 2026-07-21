@@ -10,7 +10,7 @@ resource "aws_apigatewayv2_api" "http_api" {
   name          = "v2-lambda-api"
   protocol_type = "HTTP"
 
-  # only allow farmtotablenearme.com to make POST requests
+  # only allow farmtotablenearme.com to make POST requests (for now. will have to make public since requests will come from email)
   cors_configuration {
     allow_origins = ["https://farmtotablenearme.com"]
     allow_methods = ["POST"]
