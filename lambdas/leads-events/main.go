@@ -8,11 +8,13 @@ package main
 * - Insert triggers this lambda. This lambda sends an email to validate their email.
 * 
 * Sends full welcome email:
-* - User clicks validation link which calls api
+* - User clicks validation link which calls api `GET /validate?email=%s&token=%s`
 * - api updates validation fields to mark user as validated
 * - Modify leads table triggers this lambda that sends full welcome email
 */
 
+// TODO: make api endpoint to validate
+// build this lambda and deploy to send that endpoint in template
 import (
 	"context"
 	"encoding/json"
