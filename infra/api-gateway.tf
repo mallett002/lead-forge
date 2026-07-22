@@ -82,3 +82,34 @@ resource "aws_lambda_permission" "lambda_permission_create_lead" {
   source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/POST/leads"
 }
 
+
+# Validate lead handler ********************************
+# The Integration (Connecting API to Lambda)
+resource "aws_apigatewayv2_integration" "validate_lead_integration" {
+  api_id           = aws_apigatewayv2_api.http_api.id
+  integration_type = "AWS_PROXY"
+
+  description               = "Handler for validating a lead from email link"
+  integration_method        = "GET"
+  payload_format_version    = "2.0"
+  integration_uri           = aws_lambda_function.validate_lead_lambda.invoke_arn
+}
+
+# The Route (endpoint for creating lead)
+resource "aws_apigatewayv2_route" "validate_lead_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "GET /validate"
+  target    = "integrations/${aws_apigatewayv2_integration.validate_lead_integration.id}"
+}
+
+# # Allow APIGW to trigger Lambda
+resource "aws_lambda_permission" "lambda_permission_validate_lead" {
+  statement_id  = "AllowExecutionFromAPIGatewayValidateLead"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.validate_lead_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # only allow GET /validate to trigger lambda
+  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/GET/validate"
+}
+
