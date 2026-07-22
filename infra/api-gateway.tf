@@ -89,7 +89,6 @@ resource "aws_apigatewayv2_integration" "validate_lead_integration" {
   api_id           = aws_apigatewayv2_api.http_api.id
   integration_type = "AWS_PROXY"
   description               = "Handler for validating a lead from email link"
-  # integration_method        = "GET"
   payload_format_version    = "2.0"
   integration_uri           = aws_lambda_function.validate_lead_lambda.invoke_arn
 }
