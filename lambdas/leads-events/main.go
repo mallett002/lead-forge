@@ -13,8 +13,6 @@ package main
 * - Modify leads table triggers this lambda that sends full welcome email
 */
 
-// TODO: make api endpoint to validate
-// build this lambda and deploy to send that endpoint in template
 import (
 	"context"
 	"encoding/json"
