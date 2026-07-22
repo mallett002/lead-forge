@@ -152,3 +152,70 @@ resource "aws_lambda_function" "create_lead_lambda" {
   # lambda assumes this role when it runs
   role = aws_iam_role.lambda-execution-role-create-lead-lambda.arn
 }
+
+# ****************************************************
+# Validate lead lambda: GET /api-gateway/validate
+# ****************************************************
+# iam policy - Who can assume a role
+data "aws_iam_policy_document" "policy_lambda_exec_role_validate_lead_lambda" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+
+# lambda exec role - what the lambda can do
+resource "aws_iam_role" "lambda-execution-role-validate-lead-lambda" {
+  name               = "lambda_execution_role-validate-lead-lambda"
+  assume_role_policy = data.aws_iam_policy_document.policy_lambda_exec_role_validate_lead_lambda.json
+}
+
+# Attach permissions to Lambda role (what the execution role can do)
+resource "aws_iam_role_policy" "lambda_execution_role_policy_validate_lead_lambda" {
+  name = "lambda-cloudwatch-logs"
+  role = aws_iam_role.lambda-execution-role-validate-lead-lambda.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+        ]
+        Resource = aws_dynamodb_table.leads-dynamodb-table.arn
+      },
+    ]
+  })
+}
+
+# Lambda function for creating lead
+resource "aws_lambda_function" "validate_lead_lambda" {
+  function_name = "validate-lead-lambda"
+
+  filename         = "${path.module}/../lambdas/validate-lead/function.zip"
+  source_code_hash = filebase64sha256("${path.module}/../lambdas/validate-lead/function.zip")
+
+  handler = "bootstrap"
+  runtime = "provided.al2"
+
+  # lambda assumes this role when it runs
+  role = aws_iam_role.lambda-execution-role-validate-lead-lambda.arn
+}

@@ -10,7 +10,7 @@ resource "aws_apigatewayv2_api" "http_api" {
   name          = "v2-lambda-api"
   protocol_type = "HTTP"
 
-  # only allow farmtotablenearme.com to make POST requests (for now. will have to make public since requests will come from email)
+  # only allow farmtotablenearme.com to make POST requests (requests from outside a browser are still allowed through)
   cors_configuration {
     allow_origins = ["https://farmtotablenearme.com"]
     allow_methods = ["POST"]
@@ -52,7 +52,7 @@ resource "aws_apigatewayv2_api_mapping" "api_mapping" {
 # Lambda Integrations
 # ****************************************************
 
-# Create lead handler ********************************
+# Create lead handler ********************************************************************
 # The Integration (Connecting API to Lambda)
 resource "aws_apigatewayv2_integration" "create_lead_integration" {
   api_id           = aws_apigatewayv2_api.http_api.id
@@ -83,14 +83,13 @@ resource "aws_lambda_permission" "lambda_permission_create_lead" {
 }
 
 
-# Validate lead handler ********************************
+# Validate lead handler ********************************************************************
 # The Integration (Connecting API to Lambda)
 resource "aws_apigatewayv2_integration" "validate_lead_integration" {
   api_id           = aws_apigatewayv2_api.http_api.id
   integration_type = "AWS_PROXY"
-
   description               = "Handler for validating a lead from email link"
-  integration_method        = "GET"
+  # integration_method        = "GET"
   payload_format_version    = "2.0"
   integration_uri           = aws_lambda_function.validate_lead_lambda.invoke_arn
 }
