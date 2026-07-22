@@ -139,7 +139,6 @@ func sendVerificationEmail(ctx context.Context, toEmail, name string, validation
 
 	templateData, _ := json.Marshal(map[string]string{
 		"name": name,
-        // TODO: make this endpoint
         "verificationLink": fmt.Sprintf("https://api.farmtotablenearme.com/validate?email=%s&token=%s", toEmail, validationToken),
 	})
 
