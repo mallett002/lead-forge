@@ -90,7 +90,14 @@ func handleInsert(ctx context.Context, record events.DynamoDBEventRecord) {
 	first := firstAttr.String()
 	fmt.Println("New lead first name:", first)
 
-	validationToken := firstAttr.String()
+    // get validationToken
+	tokenAttr, ok := record.Change.NewImage["validationToken"]
+	if !ok || tokenAttr.String() == "" {
+		fmt.Println("INSERT record missing validationToken")
+		return
+	}
+
+	validationToken := tokenAttr.String()
 	fmt.Println("New lead validationToken:", validationToken)
 
 	err := sendVerificationEmail(ctx, email, first, validationToken)
