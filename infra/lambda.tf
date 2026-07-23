@@ -197,8 +197,8 @@ resource "aws_iam_role_policy" "lambda_execution_role_policy_validate_lead_lambd
       {
         Effect = "Allow"
         Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
+          "dynamodb:Query",
+          "dynamodb:UpdateItem",
         ]
         Resource = aws_dynamodb_table.leads-dynamodb-table.arn
       },

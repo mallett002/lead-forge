@@ -39,16 +39,16 @@ func init() {
 	dbClient = dynamodb.NewFromConfig(cfg)
 }
 
-func HandleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func HandleRequest(ctx context.Context, event events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	if event.Body == "" {
 		log.Printf("Empty request body")
-		return events.APIGatewayProxyResponse{StatusCode: 400}, fmt.Errorf("empty request body")
+		return events.APIGatewayV2HTTPResponse{StatusCode: 400}, fmt.Errorf("empty request body")
 	}
 
 	var lead Lead
 	if err := json.Unmarshal([]byte(event.Body), &lead); err != nil {
 		log.Printf("Failed to unmarshal event: %v", err)
-		return events.APIGatewayProxyResponse{StatusCode: 400}, err
+		return events.APIGatewayV2HTTPResponse{StatusCode: 400}, err
 	}
 
 	jsonBytes, _ := json.Marshal(lead)
@@ -57,7 +57,7 @@ func HandleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (ev
 	item, err := attributevalue.MarshalMap(lead)
 	if err != nil {
 		log.Printf("failed to marshal lead, %v", err)
-		return events.APIGatewayProxyResponse{StatusCode: 500}, err
+		return events.APIGatewayV2HTTPResponse{StatusCode: 500}, err
 	}
 
 	// add validated and validationToken to dynamo insert
@@ -70,10 +70,10 @@ func HandleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (ev
 	})
 	if err != nil {
 		log.Printf("failed to put item, %v", err)
-		return events.APIGatewayProxyResponse{StatusCode: 500}, err
+		return events.APIGatewayV2HTTPResponse{StatusCode: 500}, err
 	}
 
-	return events.APIGatewayProxyResponse{StatusCode: 201}, nil
+	return events.APIGatewayV2HTTPResponse{StatusCode: 201}, nil
 }
 
 func main() {

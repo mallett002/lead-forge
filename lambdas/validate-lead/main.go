@@ -39,12 +39,12 @@ func init() {
 	dbClient = dynamodb.NewFromConfig(cfg)
 }
 
-func HandleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func HandleRequest(ctx context.Context, event events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	email := event.QueryStringParameters["email"]
 	token := event.QueryStringParameters["token"]
 
 	if email == "" || token == "" {
-		return events.APIGatewayProxyResponse{StatusCode: 400}, fmt.Errorf("missing email or token query parameters")
+		return events.APIGatewayV2HTTPResponse{StatusCode: 400}, fmt.Errorf("missing email or token query parameters")
 	}
 
 	// Query DynamoDB by email (hash key)
@@ -57,30 +57,30 @@ func HandleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (ev
 	})
 	if err != nil {
 		log.Printf("failed to query leads table, %v", err)
-		return events.APIGatewayProxyResponse{StatusCode: 500}, err
+		return events.APIGatewayV2HTTPResponse{StatusCode: 500}, err
 	}
 
 	if len(result.Items) == 0 {
-		return events.APIGatewayProxyResponse{StatusCode: 404}, fmt.Errorf("no lead found for email")
+		return events.APIGatewayV2HTTPResponse{StatusCode: 404}, fmt.Errorf("no lead found for email")
 	}
 
 	item := result.Items[0]
 
 	// Check if already validated
 	if b, ok := item["validated"].(*types.AttributeValueMemberBOOL); !ok || b.Value {
-		return events.APIGatewayProxyResponse{StatusCode: 422}, fmt.Errorf("already validated")
+		return events.APIGatewayV2HTTPResponse{StatusCode: 422}, fmt.Errorf("already validated")
 	}
 
 	// Check validation token matches
 	if s, ok := item["validationToken"].(*types.AttributeValueMemberS); !ok || s.Value != token {
-		return events.APIGatewayProxyResponse{StatusCode: 422}, fmt.Errorf("invalid token")
+		return events.APIGatewayV2HTTPResponse{StatusCode: 422}, fmt.Errorf("invalid token")
 	}
 
 	// Get createdAt (range key) for UpdateItem
 	createdAt, ok := item["createdAt"].(*types.AttributeValueMemberS)
 	if !ok {
 		log.Printf("failed to get createdAt from item")
-		return events.APIGatewayProxyResponse{StatusCode: 500}, fmt.Errorf("failed to get createdAt")
+		return events.APIGatewayV2HTTPResponse{StatusCode: 500}, fmt.Errorf("failed to get createdAt")
 	}
 
 	// Update: set validated=true, validatedAt=timestamp, remove validationToken
@@ -98,10 +98,10 @@ func HandleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (ev
 	})
 	if err != nil {
 		log.Printf("failed to update lead, %v", err)
-		return events.APIGatewayProxyResponse{StatusCode: 500}, err
+		return events.APIGatewayV2HTTPResponse{StatusCode: 500}, err
 	}
 
-	return events.APIGatewayProxyResponse{
+	return events.APIGatewayV2HTTPResponse{
 		StatusCode: 200,
 		Headers:    map[string]string{"Content-Type": "text/html"},
 		Body:       "<html><body><h2>Email verified successfully!</h2><p>You may close this tab.</p></body></html>",
