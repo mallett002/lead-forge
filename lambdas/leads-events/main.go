@@ -127,6 +127,7 @@ func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
 
 	// Only trigger when validated flips false -> true
 	if !oldValidated && newValidated {
+        // Get email
 		emailAttr, ok := record.Change.NewImage["email"]
 		if !ok || emailAttr.String() == "" {
 			fmt.Println("Validated record missing email")
@@ -135,7 +136,18 @@ func handleModify(ctx context.Context, record events.DynamoDBEventRecord) {
 		email := emailAttr.String()
 		fmt.Println("Lead validated; sending full welcome email:", email)
 
-		// TODO: send welcome email here
+        // Get first name
+		nameAttr, ok := record.Change.NewImage["first"]
+		if !ok || nameAttr.String() == "" {
+			fmt.Println("Validated record missing first name")
+			return
+		}
+		first := nameAttr.String()
+
+        err := sendFullWelcomeEmail(ctx, email, first)
+        if err != nil {
+            fmt.Printf("Error sendVerificationEmail: %v", err)	
+        }
 	}
 }
 
@@ -153,6 +165,35 @@ func sendVerificationEmail(ctx context.Context, toEmail, name string, validation
 			ToAddresses: []string{toEmail},
 		},
 		Template: aws.String("lead-forge-verification"),
+		TemplateData: aws.String(string(templateData)),
+	}
+
+	json, _ := json.Marshal(input)
+	fmt.Println("Sending email with template:", string(json))
+
+	out, err := sesClient.SendTemplatedEmail(ctx, input)
+	if err != nil {
+		fmt.Println("SES ERROR:", err)
+		return err
+	}
+
+	fmt.Println("SES SUCCESS:", out)
+	return nil
+}
+
+func sendFullWelcomeEmail(ctx context.Context, toEmail, name string) error {
+	fromEmail := aws.String("noreply@farmtotablenearme.com")
+
+	templateData, _ := json.Marshal(map[string]string{
+		"name": name,
+	})
+
+	input := &ses.SendTemplatedEmailInput{
+		Source: fromEmail,
+		Destination: &types.Destination{
+			ToAddresses: []string{toEmail},
+		},
+		Template: aws.String("lead-forge-full-welcome"),
 		TemplateData: aws.String(string(templateData)),
 	}
 

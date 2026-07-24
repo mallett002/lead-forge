@@ -17,7 +17,6 @@
     - email has link for validating
 
 ### email link click
-<!-- TODO: use validationToken here -->
 - (send validationToken & email) -> api gateway -> lambda
     - looks up user by email (hash key)
     - updates record (leads table)
