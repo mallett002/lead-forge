@@ -51,3 +51,10 @@ resource "aws_ses_domain_identity_verification" "domain_identity_verification" {
 
   depends_on = [aws_route53_record.ses_dkim_record]
 }
+
+resource "aws_ses_template" "lead-forge-full-welcome" {
+  name    = "lead-forge-full-welcome"
+  subject = "Welcome to Lead Forge!"
+  html = file("${path.module}/templates/full-welcome.html")
+  text = "Hello {{name}}, Welcome to Lead Forge!"
+}

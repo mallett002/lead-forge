@@ -27,6 +27,9 @@
     <!-- TODO: wip -->
     - leads table -> streams trigger (validated: true):
         - send welcome email
+    how:
+        - update streams lambda to send email
+        - create new template
 
 ### event bridge cron
 - get count of how many people added email this week
