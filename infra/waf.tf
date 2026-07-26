@@ -13,7 +13,7 @@ resource "aws_wafv2_web_acl" "api-cloudfront-waf" {
     sampled_requests_enabled   = true
   }
 
-  # rule to allow only US and Brazil
+  # Rule to allow only US and Brazil
   rule {
     name     = "allow-only-us-br"
     priority = 1
@@ -39,7 +39,7 @@ resource "aws_wafv2_web_acl" "api-cloudfront-waf" {
     }
   }
 
-  # 1. AWS Managed IP Reputation List (Standard Managed Rule - $1/mo)
+  # AWS Managed IP Reputation List (Standard Managed Rule - $1/mo)
   # This block enables an AWS Managed Rule Group that automatically blocks requests from IP addresses
   # flagged by Amazon's global threat intelligence
   rule {
@@ -87,7 +87,7 @@ resource "aws_wafv2_web_acl" "api-cloudfront-waf" {
   #   }
   # }
 
-  # 2. Rate Limiting Rule (IP-based limit per 1-minute window)
+  # Rate Limiting Rule (IP-based limit per 1-minute window)
   rule {
     name     = "RateLimit100Per1Min"
     priority = 20
@@ -111,7 +111,7 @@ resource "aws_wafv2_web_acl" "api-cloudfront-waf" {
     }
   }
 
-  # 3. Block Missing User-Agent or Known Script User-Agents
+  # Rule for missing User-Agent or Known Script User-Agents
   rule {
     name     = "BlockBadUserAgents"
     priority = 30
