@@ -65,7 +65,7 @@ resource "aws_iam_role_policy" "lambda_execution_role_policy_streams_lambda" {
 # triggered off of change in leads table
 resource "aws_lambda_event_source_mapping" "dynamo_stream" {
   event_source_arn  = aws_dynamodb_table.leads-dynamodb-table.stream_arn
-  function_name = aws_lambda_function.leads_stream_lambda.arn
+  function_name     = aws_lambda_function.leads_stream_lambda.arn
   starting_position = "LATEST"
 
   tags = {

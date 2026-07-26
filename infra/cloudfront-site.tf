@@ -11,7 +11,7 @@ resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = "farmtotablenearme-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always" # specifies which requests cloudfront signs (authenticates)
-  signing_protocol                  = "sigv4" # how cloudfront signs (authenticates). "sigv4" is the only valid value
+  signing_protocol                  = "sigv4"  # how cloudfront signs (authenticates). "sigv4" is the only valid value
 }
 
 resource "aws_cloudfront_distribution" "cloudfront-distro" {
@@ -23,8 +23,8 @@ resource "aws_cloudfront_distribution" "cloudfront-distro" {
   }
 
   origin {
-    domain_name = aws_s3_bucket.site-bucket.bucket_regional_domain_name
-    origin_id   = "s3-origin"
+    domain_name              = aws_s3_bucket.site-bucket.bucket_regional_domain_name
+    origin_id                = "s3-origin"
     origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
   }
 
@@ -53,7 +53,7 @@ resource "aws_cloudfront_distribution" "cloudfront-distro" {
     geo_restriction {
       restriction_type = "whitelist"
       # Allow only United States and Brazil
-      locations        = ["US", "BR"]
+      locations = ["US", "BR"]
     }
   }
 }

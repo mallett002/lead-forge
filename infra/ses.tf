@@ -8,18 +8,18 @@
 resource "aws_ses_template" "lead-forge-verification" {
   name    = "lead-forge-verification"
   subject = "Verify your email"
-  html = file("${path.module}/templates/verification.html")
-  text = "Hello {{name}}, verify here: {{verificationLink}}"
+  html    = file("${path.module}/templates/verification.html")
+  text    = "Hello {{name}}, verify here: {{verificationLink}}"
 }
 
 # configuation set for tracking and metrics
 resource "aws_ses_configuration_set" "config_set" {
-  name = "ses_config_set"
+  name                       = "ses_config_set"
   reputation_metrics_enabled = true # Amazon CloudWatch metric. The default value is false
-  sending_enabled = true # email sending is enabled or disabled for the configuration set. The default value is true.
+  sending_enabled            = true # email sending is enabled or disabled for the configuration set. The default value is true.
 
   delivery_options {
-    tls_policy = "Require"  #If the value is Optional, messages can be delivered in plain text if a TLS connection can't be established. 
+    tls_policy = "Require" #If the value is Optional, messages can be delivered in plain text if a TLS connection can't be established. 
   }
 }
 
@@ -55,6 +55,6 @@ resource "aws_ses_domain_identity_verification" "domain_identity_verification" {
 resource "aws_ses_template" "lead-forge-full-welcome" {
   name    = "lead-forge-full-welcome"
   subject = "Welcome to Lead Forge!"
-  html = file("${path.module}/templates/full-welcome.html")
-  text = "Hello {{name}}, Welcome to Lead Forge!"
+  html    = file("${path.module}/templates/full-welcome.html")
+  text    = "Hello {{name}}, Welcome to Lead Forge!"
 }
