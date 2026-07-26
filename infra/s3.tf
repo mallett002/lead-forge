@@ -38,7 +38,7 @@ resource "aws_s3_bucket_policy" "bucket-policy" {
         Principal = {
           Service = "cloudfront.amazonaws.com"
         }
-        Action = "s3:GetObject"
+        Action   = "s3:GetObject"
         Resource = "${aws_s3_bucket.site-bucket.arn}/*"
         Condition = {
           StringEquals = {
@@ -111,8 +111,8 @@ resource "aws_s3_bucket_public_access_block" "allow_public" {
   bucket = aws_s3_bucket.lead-forge-assets.id
 
   # turn off acls (legacy)
-  ignore_public_acls  = true
-  block_public_acls   = true
+  ignore_public_acls = true
+  block_public_acls  = true
 
   # allow bucket policy to grant public access
   block_public_policy = false
@@ -125,14 +125,14 @@ resource "aws_s3_bucket_public_access_block" "allow_public" {
 resource "aws_s3_bucket_policy" "lead-forge-assets-policy" {
   bucket = aws_s3_bucket.lead-forge-assets.id
 
-    policy = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
+        Effect    = "Allow"
         Principal = "*"
-        Action = ["s3:GetObject"]
-        Resource = "${aws_s3_bucket.lead-forge-assets.arn}/*"
+        Action    = ["s3:GetObject"]
+        Resource  = "${aws_s3_bucket.lead-forge-assets.arn}/*"
       },
     ]
   })
