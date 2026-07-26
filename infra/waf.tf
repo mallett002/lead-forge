@@ -69,29 +69,30 @@ resource "aws_wafv2_web_acl" "api-cloudfront-waf" {
     }
   }
 
-  # # 2. Rate Limiting Rule (IP-based limit per 5-minute window)
-  # rule {
-  #   name     = "RateLimit100Per5Min"
-  #   priority = 20
-  #
-  #   action {
-  #     block {} # Or use challenge {}
-  #   }
-  #
-  #   statement {
-  #     rate_based_statement {
-  #       limit              = 100
-  #       aggregate_key_type = "IP"
-  #     }
-  #   }
-  #
-  #   visibility_config {
-  #     cloudwatch_metrics_enabled = true
-  #     metric_name                = "rate-limit-rule"
-  #     sampled_requests_enabled   = true
-  #   }
-  # }
-  #
+  # 2. Rate Limiting Rule (IP-based limit per 1-minute window)
+  rule {
+    name     = "RateLimit100Per1Min"
+    priority = 20
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = 100
+        aggregate_key_type = "IP"
+        evaluation_window_sec = 60
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "rate-limit-rule"
+      sampled_requests_enabled   = true
+    }
+  }
+
   # # 3. Block Missing User-Agent or Known Script User-Agents
   # rule {
   #   name     = "BlockBadUserAgents"
