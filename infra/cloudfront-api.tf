@@ -11,6 +11,9 @@
 resource "aws_cloudfront_distribution" "api" {
   enabled = true
 
+  # Put the WAF in front of this CF distrabution
+  web_acl_id = aws_wafv2_web_acl.api-cloudfront-waf.arn
+
   origin {
     domain_name = "${aws_apigatewayv2_api.http_api.id}.execute-api.us-east-1.amazonaws.com"
     origin_id   = "http_api_origin"
