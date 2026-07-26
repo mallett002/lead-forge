@@ -13,11 +13,6 @@ resource "aws_wafv2_web_acl" "api-cloudfront-waf" {
     sampled_requests_enabled   = true
   }
 
-  # Prevent Terraform from managing inline rules
-  lifecycle {
-    ignore_changes = [rule]
-  }
-
   # rule to allow only US and Brazil
   rule {
     name     = "allow-only-us-br"
@@ -93,59 +88,60 @@ resource "aws_wafv2_web_acl" "api-cloudfront-waf" {
     }
   }
 
-  # # 3. Block Missing User-Agent or Known Script User-Agents
-  # rule {
-  #   name     = "BlockBadUserAgents"
-  #   priority = 30
-  #
-  #   action {
-  #     block {}
-  #   }
-  #
-  #   statement {
-  #     or_statement {
-  #       # Missing User-Agent
-  #       statement {
-  #         size_constraint_statement {
-  #           field_to_match {
-  #             single_header {
-  #               name = "user-agent"
-  #             }
-  #           }
-  #           comparison_operator = "EQ"
-  #           size                = 0
-  #           text_transformation {
-  #             priority = 0
-  #             type     = "NONE"
-  #           }
-  #         }
-  #       }
-  #
-  #       # Common scraper UA strings
-  #       statement {
-  #         regex_pattern_set_reference_statement {
-  #           arn = aws_wafv2_regex_pattern_set.bad_user_agents.arn
-  #           field_to_match {
-  #             single_header {
-  #               name = "user-agent"
-  #             }
-  #           }
-  #           text_transformation {
-  #             priority = 0
-  #             type     = "LOWERCASE"
-  #           }
-  #         }
-  #       }
-  #     }
-  #   }
-  #
-  #   visibility_config {
-  #     cloudwatch_metrics_enabled = true
-  #     metric_name                = "bad-user-agents-rule"
-  #     sampled_requests_enabled   = true
-  #   }
-  # }
-  #
+  # TODO: figure out how this works
+  # 3. Block Missing User-Agent or Known Script User-Agents
+  rule {
+    name     = "BlockBadUserAgents"
+    priority = 30
+
+    action {
+      block {}
+    }
+
+    statement {
+      or_statement {
+        # Missing User-Agent
+        statement {
+          size_constraint_statement {
+            field_to_match {
+              single_header {
+                name = "user-agent"
+              }
+            }
+            comparison_operator = "EQ"
+            size                = 0
+            text_transformation {
+              priority = 0
+              type     = "NONE"
+            }
+          }
+        }
+
+        # Common scraper UA strings
+        statement {
+          regex_pattern_set_reference_statement {
+            arn = aws_wafv2_regex_pattern_set.bad_user_agents.arn
+            field_to_match {
+              single_header {
+                name = "user-agent"
+              }
+            }
+            text_transformation {
+              priority = 0
+              type     = "LOWERCASE"
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "bad-user-agents-rule"
+      sampled_requests_enabled   = true
+    }
+  }
+
   # # 4. Silent WAF Challenge for Suspicious Traffic
   # # Challenges requests missing standard browser headers (Accept-Language)
   # rule {
@@ -258,3 +254,18 @@ resource "aws_wafv2_web_acl" "api-cloudfront-waf" {
 #     sampled_requests_enabled   = false
 #   }
 # }
+
+resource "aws_wafv2_regex_pattern_set" "bad_user_agents" {
+  provider    = aws.us_east_1 # Ensure this matches your CloudFront WAF provider
+  name        = "bad-user-agents-pattern-set"
+  description = "Regex patterns for common bot and scraper user agents"
+  scope       = "CLOUDFRONT"
+
+  regular_expression {
+    regex_string = ".*(python-requests|curl|postmanruntime|go-http-client|scrapy|httpx).*"
+  }
+
+  tags = {
+    Name = "lead-forge"
+  }
+}
